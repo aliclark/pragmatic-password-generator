@@ -2,23 +2,46 @@
 
 import secrets
 import string
+import argparse
 
 
-# Conservative choice, assume the site saved passwords as plain MD5
-hash = 'MD5'
+def cloudHashesPerDollar(algorithm):
+    return max([card['hps'][algorithm] / card['cost'] for card in cards.values()])
 
-# Assume the operation is running on the commercial cloud
-infrastructure = 'cloud'
 
-# Protect against an attack using a $10k budget
-budget = 10 * 1000
+def wattHashesPerDollar(algorithm):
+    # https://www.globalpetrolprices.com/electricity_prices/
+    # March 2020
+    # The cheapest countries for electricity are around $0.05 / kwh
+    # Converted to $/watt
+    wattCost = 0.05 / (1000 * 60 * 60)
+    hashesPerWatt = max([card['hps'][algorithm] / card['watt'] for card in cards.values()])
+    return hashesPerWatt / wattCost
 
-# Maximum acceptable probability of compromise
-probability = 1/100
+
+factors = {
+    'cloud': cloudHashesPerDollar,
+    'watts': wattHashesPerDollar
+}
+
+
+parser = argparse.ArgumentParser(description='Generate a password.')
+parser.add_argument('--budget', type=int, default=10*1000,
+                    help='the full budget in dollars for an attack')
+parser.add_argument('--acceptance', type=float, default=0.01,
+                    help='acceptable probability of an attack being successful using the full budget')
+parser.add_argument('--factor', choices=factors.keys(), default='cloud',
+                    help='the constraining factor for the attack')
+parser.add_argument('--algorithm', choices=['MD5'], default='MD5',
+                    help='the assumed algorithm under attack')
+
+args = parser.parse_args()
 
 
 # Prices as of 2020-11-16
 # https://cloud.google.com/compute/gpus-pricing
+# todo: check if AWS come out with something cheaper
+# https://aws.amazon.com/ec2/spot/pricing/
 cards = {
     # https://gist.github.com/Chick3nman/4d3c5fd44f33610ddbbf026d46d9e0aa
     # https://github.com/siseci/hashcat-benchmark-comparison/blob/master/8x%20Tesla%20V100%20p3.16xlarge%20Hashcat%20Benchmark
@@ -33,29 +56,7 @@ cards = {
 }
 
 
-# todo: check if AWS come out with something cheaper
-# https://aws.amazon.com/ec2/spot/pricing/
-def cloudHashesPerDollar(hash):
-    return max([card['hps'][hash] / card['cost'] for card in cards.values()])
-
-
-def wattHashesPerDollar(hash):
-    # https://www.globalpetrolprices.com/electricity_prices/
-    # March 2020
-    # The cheapest countries for electricity are around $0.05 / kwh
-    # Converted to $/watt
-    wattCost = 0.05 / (1000 * 60 * 60)
-    hashesPerWatt = max([card['hps'][hash] / card['watt'] for card in cards.values()])
-    return hashesPerWatt / wattCost
-
-
-infrastructures = {
-    'cloud': cloudHashesPerDollar,
-    'hosted': wattHashesPerDollar
-}
-
-
-combinations = (budget / probability) * infrastructures[infrastructure](hash)
+combinations = (args.budget / args.acceptance) * factors[args.factor](args.algorithm)
 
 
 password = ''
