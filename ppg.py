@@ -32,8 +32,14 @@ parser.add_argument('--acceptance', type=float, default=0.01,
                     help='acceptable probability of an attack being successful using the full budget')
 parser.add_argument('--factor', choices=factors.keys(), default='cloud',
                     help='the constraining factor for the attack')
+# Generally MD5 is good as a minimum computation benchmark.
+# It may be tempting to factor down for bcrypt/scrypt et al. for lower performance on GPU,
+# but taking into account FPGA the performance difference is greatly reduced:
+# https://scatteredsecrets.medium.com/bcrypt-password-cracking-extremely-slow-not-if-you-are-using-hundreds-of-fpgas-7ae42e3272f6
 parser.add_argument('--algorithm', choices=['MD5'], default='MD5',
                     help='the assumed algorithm under attack')
+parser.add_argument('--lifetime', type=int, default=2,
+                    help='number of years lifespan of the secret')
 
 args = parser.parse_args()
 
@@ -56,7 +62,13 @@ cards = {
 }
 
 
-combinations = (args.budget / args.acceptance) * factors[args.factor](args.algorithm)
+# https://arxiv.org/pdf/1911.11313.pdf
+# energy efficiency (FLOPS per Watt) of GPUs doubles approximately every three to four years
+
+scale = 2 ** (args.lifetime / 3.5)
+
+
+combinations = (args.budget / args.acceptance) * factors[args.factor](args.algorithm) * scale
 
 
 password = ''
