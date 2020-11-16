@@ -1,4 +1,4 @@
-# pragmatic-password-generator
+# Pragmatic password generator
 
 Generates sensible, secure passwords for everyday use.
 
