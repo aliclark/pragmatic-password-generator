@@ -28,3 +28,6 @@ optional arguments:
                         the constraining factor for the attack
   --algorithm {MD5}     the assumed algorithm under attack
 ```
+
+The default parameters allow for a 1% probability of success on any given
+password, using a budget of $10k on Google Cloud
