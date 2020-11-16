@@ -29,5 +29,5 @@ optional arguments:
   --algorithm {MD5}     the assumed algorithm under attack
 ```
 
-The default parameters allow for a 1% probability of success on any given
-password, using a budget of $10k on Google Cloud
+Using the default parameters, an attacker spending a budget of $10k on Google
+Cloud would have 1% probability of breaking the MD5 hash of the password.
