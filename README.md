@@ -18,7 +18,9 @@ or you trust the service with your password <sup>4</sup> <sup>5</sup>, then you 
 ## Usage
 
 ```
-usage: ppg [-h] [--budget dollars] [--acceptance probability] [--factor {cloud,watts}] [--algorithm {MD5}] [--lifetime years] [--online [rate-per-second]] [--service {facebook}]
+usage: ppg [-h] [--budget dollars] [--acceptance probability] [--factor {cloud,watts}]
+           [--algorithm {MD5}] [--lifetime years] [--online [rate-per-second]]
+           [--service {facebook}] [--minimum-length characters] [--show-entropy]
 
 Generate a password.
 
@@ -26,7 +28,8 @@ optional arguments:
   -h, --help            show this help message and exit
   --budget dollars      the full budget for an attack
   --acceptance probability
-                        acceptable probability of an attack being successful using the full budget
+                        acceptable probability of an attack being successful using the
+                        full budget
   --factor {cloud,watts}
                         the constraining resource factor for the attack
   --algorithm {MD5}     the assumed algorithm under attack
@@ -34,6 +37,9 @@ optional arguments:
   --online [rate-per-second]
                         assume only online bruteforcing at rate/s
   --service {facebook}  services which use HSM to prevent offline cracking
+  --minimum-length characters
+                        generate more characters if below the minimum length specified
+  --show-entropy        display the entropy needed (in bits) without generating a password
 ```
 
 Using the default parameters, an attacker 2 years into the future

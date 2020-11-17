@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
+from argparse import ArgumentParser
+from math import log, ceil
 import secrets
-import string
-import argparse
+from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 
 
 def cloudHashesPerDollar(algorithm):
@@ -25,7 +26,7 @@ factors = {
 }
 
 
-parser = argparse.ArgumentParser(description='Generate a password.')
+parser = ArgumentParser(description='Generate a password.')
 parser.add_argument('--budget', type=int, default=10*1000, metavar='dollars',
                     help='the full budget for an attack')
 parser.add_argument('--acceptance', type=float, default=0.01, metavar='probability',
@@ -46,6 +47,10 @@ parser.add_argument('--online', type=int, nargs='?', const=onlineRateDefault, me
 # https://security.stackexchange.com/questions/181708/how-facebook-hashes-passwords
 parser.add_argument('--service', choices=['facebook'],
                     help='services which use HSM to prevent offline cracking')
+parser.add_argument('--minimum-length', type=int, default=0, metavar='characters',
+                    help='generate more characters if below the minimum length specified')
+parser.add_argument('--show-entropy', action='store_true',
+                    help='display the entropy needed (in bits) without generating a password')
 
 
 args = parser.parse_args()
@@ -53,6 +58,9 @@ args = parser.parse_args()
 
 if args.service:
     args.online = onlineRateDefault
+
+if args.online and not args.lifetime:
+    exit('Please specify a lifetime when using the online option')
 
 
 # Prices as of 2020-11-16
@@ -87,21 +95,26 @@ else:
     combinations = ((args.budget / args.acceptance) * factors[args.factor](args.algorithm) * efficiency) / scale
 
 
+if args.show_entropy:
+    print(ceil(log(max(combinations, (len(ascii_lowercase) ** (args.minimum_length - 2)) * len(digits) * len(punctuation), 2))))
+    exit()
+
+
 password = ''
 uniqueness = 1
 
-password += secrets.choice(string.ascii_uppercase)
-uniqueness *= len(string.ascii_uppercase)
+password += secrets.choice(ascii_uppercase)
+uniqueness *= len(ascii_uppercase)
 
-password += secrets.choice(string.digits)
-uniqueness *= len(string.digits)
+password += secrets.choice(digits)
+uniqueness *= len(digits)
 
-password += secrets.choice(string.punctuation)
-uniqueness *= len(string.punctuation)
+password += secrets.choice(punctuation)
+uniqueness *= len(punctuation)
 
-while uniqueness < combinations or len(password) < 8:
-    password = password[:1] + secrets.choice(string.ascii_lowercase) + password[1:]
-    uniqueness *= len(string.ascii_lowercase)
+while uniqueness < combinations or len(password) < args.minimum_length:
+    password = password[:1] + secrets.choice(ascii_lowercase) + password[1:]
+    uniqueness *= len(ascii_lowercase)
 
 
 print(password)
