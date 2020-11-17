@@ -14,7 +14,7 @@ The rest of the characters are lowercase to make them easy to type on mobile.
 
 If password compromise is within your threat model (eg. you use MFA <sup>1</sup>) <sup>2</sup> <sup>3</sup>
 or the service incorporates measures against offline cracking attacks <sup>4</sup> <sup>5</sup>,
-then consider using `./ppg.py --online` instead.
+consider using `./ppg.py --online` instead.
 
 MFA is recommended wherever possible when using passwords.
 
