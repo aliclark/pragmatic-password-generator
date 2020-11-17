@@ -48,7 +48,7 @@ optional arguments:
 Using the default parameters, an attacker 2 years into the future
 spending a budget of $10k on Google Cloud would be expected to
 have no greater than 1% probability of recovering your password from
-a leaked database which is secured by a weak level of hashing.
+a leaked database which is secured by any kind of hashing.
 
 1. https://en.wikipedia.org/wiki/Multi-factor_authentication
 2. https://nakedsecurity.sophos.com/2019/05/23/google-stored-some-passwords-in-plain-text-for-14-years/#:~:text=The%20way%20Google%20typically%20handles,before%20being%20saved%20to%20disk.
