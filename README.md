@@ -13,13 +13,7 @@ The password format ensures an uppercase letter, digit, and symbol are present.
 The rest of the characters are lowercase to make them easy to type on mobile.
 
 If password compromise is within your threat model <sup>1</sup> <sup>2</sup> <sup>3</sup>
-or you trust the service with your password <sup>4</sup> <sup>5</sup>, then you could consider using `ppg --online` instead.
-
-[1]: https://en.wikipedia.org/wiki/Multi-factor_authentication
-[2]: https://nakedsecurity.sophos.com/2019/05/23/google-stored-some-passwords-in-plain-text-for-14-years/#:~:text=The%20way%20Google%20typically%20handles,before%20being%20saved%20to%20disk.
-[3]: https://nakedsecurity.sophos.com/2019/04/19/facebook-we-logged-100x-more-instagram-plaintext-passwords-than-we-thought/
-[4]: https://security.stackexchange.com/questions/181708/how-facebook-hashes-passwords
-[5]: https://dropbox.tech/security/how-dropbox-securely-stores-your-passwords
+or you trust the service with your password <sup>4</sup> <sup>5</sup>, then you could consider using `./ppg.py --online` instead.
 
 ## Usage
 
@@ -46,3 +40,9 @@ Using the default parameters, an attacker 2 years into the future
 spending a budget of $10k on Google Cloud would be expected to
 have no greater than 1% probability of recovering your password from
 a leaked database secured with only a weak level of hashing.
+
+1. https://en.wikipedia.org/wiki/Multi-factor_authentication
+2. https://nakedsecurity.sophos.com/2019/05/23/google-stored-some-passwords-in-plain-text-for-14-years/#:~:text=The%20way%20Google%20typically%20handles,before%20being%20saved%20to%20disk.
+3. https://nakedsecurity.sophos.com/2019/04/19/facebook-we-logged-100x-more-instagram-plaintext-passwords-than-we-thought/
+4. https://security.stackexchange.com/questions/181708/how-facebook-hashes-passwords
+5. https://dropbox.tech/security/how-dropbox-securely-stores-your-passwords
