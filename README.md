@@ -12,8 +12,9 @@ The length of the password is calculated using public data based on the performa
 The password format ensures an uppercase letter, digit, and symbol are present.
 The rest of the characters are lowercase to make them easy to type on mobile.
 
-If password compromise is within your threat model <sup>1</sup> <sup>2</sup> <sup>3</sup>
-or you trust the service with your password <sup>4</sup> <sup>5</sup>, then you could consider using `./ppg.py --online` instead.
+If password compromise is within your threat model (eg. you use MFA) <sup>1</sup> <sup>2</sup> <sup>3</sup>
+or the service incorporates measures against offline cracking attacks <sup>4</sup> <sup>5</sup>,
+then consider using `./ppg.py --online` instead.
 
 MFA is recommended wherever possible when using passwords.
 
