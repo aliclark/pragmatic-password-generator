@@ -63,21 +63,29 @@ if args.online and not args.lifetime:
     exit('Please specify a lifetime when using the online option')
 
 
-# Prices as of 2020-11-16
+# Prices as of 2020-11-18
 # https://cloud.google.com/compute/gpus-pricing
-# todo: check if AWS come out with something cheaper
 # https://aws.amazon.com/ec2/spot/pricing/
 cards = {
+    # https://hashcat.net/forum/archive/index.php?thread-7990.html
+    'gcloud/T4':   { 'hps': { 'MD5':      (21393.2 * 1000 * 1000) / 1 }, 'cost': 0.11  / (60 * 60), 'watt':  75 },
+    # No source found for Tesla P4 benchmarks
+    #'gcloud.P4':   { 'hps': { 'MD5':          (??? * 1000 * 1000) / 1 }, 'cost': 0.216 / (60 * 60), 'watt':  75 },
     # https://gist.github.com/Chick3nman/4d3c5fd44f33610ddbbf026d46d9e0aa
     # https://github.com/siseci/hashcat-benchmark-comparison/blob/master/8x%20Tesla%20V100%20p3.16xlarge%20Hashcat%20Benchmark
-    'V100': { 'watt': 250, 'cost': 0.74  / (60 * 60), 'hps': { 'MD5': (450 * 1000 * 1000 * 1000) / 8 } },
-    # https://hashcat.net/forum/archive/index.php?thread-7990.html
-    'T4':   { 'watt': 75,  'cost': 0.11  / (60 * 60), 'hps': { 'MD5': (21393.2 * 1000 * 1000) / 1 } },
-    # https://gist.github.com/koenrh/3a960ab619cb9f5e21b7174793a956ff
-    'K80':  { 'watt': 300, 'cost': 0.135 / (60 * 60), 'hps': { 'MD5': (16908.6 * 1000 * 1000) / 4 } },
+    'gcloud/V100': { 'hps': { 'MD5': (450 * 1000   * 1000 * 1000) / 8 }, 'cost': 0.74  / (60 * 60), 'watt': 250 },
     # https://github.com/someshkar/colabcat/blob/master/benchmarks/Tesla-P100.txt
-    'P100': { 'watt': 300, 'cost': 0.43  / (60 * 60), 'hps': { 'MD5': (26993.7 * 1000 * 1000) / 1 } }
-    # No source found for Tesla P4 benchmarks
+    'gcloud/P100': { 'hps': { 'MD5':      (26993.7 * 1000 * 1000) / 1 }, 'cost': 0.43  / (60 * 60), 'watt': 300 },
+    # https://gist.github.com/koenrh/3a960ab619cb9f5e21b7174793a956ff
+    'gcloud/K80':  { 'hps': { 'MD5':      (16908.6 * 1000 * 1000) / 4 }, 'cost': 0.135 / (60 * 60), 'watt': 300 },
+    # https://github.com/javydekoning/aws-hashcat
+    'g3s.xlarge/M60':       { 'hps': { 'MD5':        11732.8 * 1000 * 1000 }, 'cost': 0.225  / (60 * 60), 'watt': 300 },
+    'g4dn.xlarge/T4':       { 'hps': { 'MD5':        20625.3 * 1000 * 1000 }, 'cost': 0.1578 / (60 * 60), 'watt':  75 },
+    'g4dn.12xlarge/4xT4':   { 'hps': { 'MD5':        83207.3 * 1000 * 1000 }, 'cost': 1.1736 / (60 * 60), 'watt':  75 * 4 },
+    'p3.2xlarge/V100':      { 'hps': { 'MD5':        55715.1 * 1000 * 1000 }, 'cost': 0.918  / (60 * 60), 'watt': 250 },
+    'p3.16xlarge/8xV100':   { 'hps': { 'MD5': 451.8 * 1000   * 1000 * 1000 }, 'cost': 7.344  / (60 * 60), 'watt': 250 * 8 },
+    'p3dn.24xlarge/8xV100': { 'hps': { 'MD5': 443.4 * 1000   * 1000 * 1000 }, 'cost': 9.3636 / (60 * 60), 'watt': 250 * 8 },
+    'p4d.24xlarge/8xA100':  { 'hps': { 'MD5': 523.5 * 1000   * 1000 * 1000 }, 'cost': 9.8318 / (60 * 60), 'watt': 400 * 8 }
 }
 
 
