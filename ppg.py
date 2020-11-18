@@ -96,7 +96,8 @@ else:
 
 
 if args.show_entropy:
-    print(ceil(log(max(combinations, (len(ascii_lowercase) ** (args.minimum_length - 2)) * len(digits) * len(punctuation), 2))))
+    minimumLengthCombinations = len(ascii_uppercase) * (len(ascii_lowercase) ** (args.minimum_length - 3)) * len(digits) * len(punctuation)
+    print(ceil(log(max(combinations, minimumLengthCombinations), 2)))
     exit()
 
 
