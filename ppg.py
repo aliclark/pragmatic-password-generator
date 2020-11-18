@@ -49,6 +49,8 @@ parser.add_argument('--service', choices=['facebook'],
                     help='services which use HSM to prevent offline cracking')
 parser.add_argument('--minimum-length', type=int, default=0, metavar='characters',
                     help='generate more characters if below the minimum length specified')
+parser.add_argument('--all-lowercase', action='store_true',
+                    help='use only lowercase characters (ie. there are no external complexity requirements like for a WiFi password)')
 parser.add_argument('--show-entropy', action='store_true',
                     help='display the entropy needed (in bits) without generating a password')
 
@@ -104,7 +106,10 @@ else:
 
 
 if args.show_entropy:
-    minimumLengthCombinations = len(ascii_uppercase) * (len(ascii_lowercase) ** (args.minimum_length - 3)) * len(digits) * len(punctuation)
+    if args.all_lowercase:
+        minimumLengthCombinations = len(ascii_lowercase) ** args.minimum_length
+    else:
+        minimumLengthCombinations = len(ascii_uppercase) * (len(ascii_lowercase) ** (args.minimum_length - 3)) * len(digits) * len(punctuation)
     print(ceil(log(max(combinations, minimumLengthCombinations), 2)))
     exit()
 
@@ -112,14 +117,15 @@ if args.show_entropy:
 password = ''
 uniqueness = 1
 
-password += secrets.choice(ascii_uppercase)
-uniqueness *= len(ascii_uppercase)
+if not args.all_lowercase:
+    password += secrets.choice(ascii_uppercase)
+    uniqueness *= len(ascii_uppercase)
 
-password += secrets.choice(digits)
-uniqueness *= len(digits)
+    password += secrets.choice(digits)
+    uniqueness *= len(digits)
 
-password += secrets.choice(punctuation)
-uniqueness *= len(punctuation)
+    password += secrets.choice(punctuation)
+    uniqueness *= len(punctuation)
 
 while uniqueness < combinations or len(password) < args.minimum_length:
     password = password[:1] + secrets.choice(ascii_lowercase) + password[1:]

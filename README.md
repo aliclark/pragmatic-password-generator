@@ -21,9 +21,8 @@ MFA is recommended wherever possible when using passwords.
 ## Usage
 
 ```
-usage: ppg [-h] [--budget dollars] [--acceptance probability] [--factor {cloud,watts}]
-           [--algorithm {MD5}] [--lifetime years] [--online [rate-per-second]]
-           [--service {facebook}] [--minimum-length characters] [--show-entropy]
+usage: ppg [-h] [--budget dollars] [--acceptance probability] [--factor {cloud,watts}] [--algorithm {MD5}] [--lifetime years] [--online [rate-per-second]] [--service {facebook}]
+           [--minimum-length characters] [--all-lowercase] [--show-entropy]
 
 Generate a password.
 
@@ -31,8 +30,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --budget dollars      the full budget for an attack
   --acceptance probability
-                        acceptable probability of an attack being successful using the
-                        full budget
+                        acceptable probability of an attack being successful using the full budget
   --factor {cloud,watts}
                         the constraining resource factor for the attack
   --algorithm {MD5}     the assumed algorithm under attack
@@ -42,6 +40,7 @@ optional arguments:
   --service {facebook}  services which use HSM to prevent offline cracking
   --minimum-length characters
                         generate more characters if below the minimum length specified
+  --all-lowercase       use only lowercase characters (ie. there are no external complexity requirements like for a WiFi password)
   --show-entropy        display the entropy needed (in bits) without generating a password
 ```
 
