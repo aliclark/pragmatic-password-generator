@@ -7,8 +7,10 @@ from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 
 
 def cloudHashesPerDollar(algorithm):
-    return max([card['hps'][algorithm] / card['cost'] for card in cards.values()])
-
+    hpd = max([card['hps'][algorithm] / card['cost'] for card in cards.values()])
+    #print([(name, card['hps'][algorithm] / card['cost']) for name, card in cards.items()])
+    #print(hpd)
+    return hpd
 
 def wattHashesPerDollar(algorithm):
     # https://www.globalpetrolprices.com/electricity_prices/
@@ -17,6 +19,8 @@ def wattHashesPerDollar(algorithm):
     # Converted to $/watt
     wattCost = 0.05 / (1000 * 60 * 60)
     hashesPerWatt = max([card['hps'][algorithm] / card['watt'] for card in cards.values()])
+    #print([(name, card['hps'][algorithm] / card['watt']) for name, card in cards.items()])
+    #print(hashesPerWatt)
     return hashesPerWatt / wattCost
 
 
@@ -28,7 +32,7 @@ factors = {
 
 parser = ArgumentParser(description='Generate a password.')
 parser.add_argument('--budget', type=int, default=10*1000, metavar='dollars',
-                    help='the full budget for an attack')
+                    help='budget for an attack (if attackers could collaborate, then their combined resources)')
 parser.add_argument('--acceptance', type=float, default=0.01, metavar='probability',
                     help='acceptable probability of an attack being successful using the full budget')
 parser.add_argument('--factor', choices=factors.keys(), default='cloud',
@@ -39,30 +43,50 @@ parser.add_argument('--factor', choices=factors.keys(), default='cloud',
 # https://scatteredsecrets.medium.com/bcrypt-password-cracking-extremely-slow-not-if-you-are-using-hundreds-of-fpgas-7ae42e3272f6
 parser.add_argument('--algorithm', choices=['MD5'], default='MD5',
                     help='the assumed algorithm under attack')
-parser.add_argument('--lifetime', type=int, default=2, metavar='years',
+parser.add_argument('--lifetime', type=int, default=20, metavar='years',
                     help='lifespan of the secret')
-onlineRateDefault = 10
-parser.add_argument('--online', type=int, nargs='?', const=onlineRateDefault, metavar='rate-per-second',
-                    help='assume only online bruteforcing at rate/s')
-# https://security.stackexchange.com/questions/181708/how-facebook-hashes-passwords
-parser.add_argument('--service', choices=['facebook'],
-                    help='services which use HSM to prevent offline cracking')
+parser.add_argument('--service', choices=['fido', 'hello', 'facebook'],
+                    help='services which use an HSM or TPM to prevent offline cracking')
 parser.add_argument('--minimum-length', type=int, default=0, metavar='characters',
                     help='generate more characters if below the minimum length specified')
-parser.add_argument('--all-lowercase', action='store_true',
-                    help='use only lowercase characters (ie. there are no external complexity requirements like for a WiFi password)')
+parser.add_argument('--format', choices=['add-complexity', 'lowercase', 'digits'],
+                    help='output options, the default is to vary character types to meet complexity requirements')
 parser.add_argument('--show-entropy', action='store_true',
                     help='display the entropy needed (in bits) without generating a password')
 
 
 args = parser.parse_args()
 
+rate = 0
 
-if args.service:
-    args.online = onlineRateDefault
 
-if args.online and not args.lifetime:
-    exit('Please specify a lifetime when using the online option')
+if args.service == 'fido':
+    # https://fidoalliance.org/how-fido-works/
+    # https://fidoalliance.org/specs/fido2/fido-client-to-authenticator-protocol-v2.1-rd-20191217.html#pinretries
+    # Assume an attacker can attempt 6 tries and wait 1 hour for the user to unlock the key again
+    rate = 6 / (60 * 60)
+    defaultFormat = 'lowercase'
+elif args.service == 'hello':
+    # https://docs.microsoft.com/en-us/windows/security/information-protection/tpm/manage-tpm-lockout
+    # Assume an attacker can attempt 32 tries and reboot in the space of 60 seconds
+    rate = 32 / 60
+    defaultFormat = 'lowercase'
+elif args.service == 'facebook':
+    # https://security.stackexchange.com/questions/181708/how-facebook-hashes-passwords
+    # Unclear what the rate is, but Facebook implements brute-force lockout for up to 24h:
+    # https://security.stackexchange.com/questions/84032/how-can-facebook-possibly-stop-a-bruteforce-attack-on-an-account
+    rate = 1
+    defaultFormat = 'lowercase'
+else:
+    defaultFormat = 'add-complexity'
+
+
+if not args.format:
+    args.format = defaultFormat
+
+
+if rate and not args.lifetime:
+    exit('Please set lifetime when specifying a service')
 
 
 # Prices as of 2020-11-18
@@ -99,17 +123,21 @@ efficiency = 2 ** (args.lifetime / 3.5)
 scale = 0.81 ** args.lifetime
 
 
-if args.online:
-    combinations = (args.online * args.lifetime * 365 * 24 * 60 * 60) / args.acceptance
+if rate:
+    combinations = (rate * args.lifetime * 365 * 24 * 60 * 60) / args.acceptance
 else:
     combinations = ((args.budget / args.acceptance) * factors[args.factor](args.algorithm) * efficiency) / scale
 
 
 if args.show_entropy:
-    if args.all_lowercase:
-        minimumLengthCombinations = len(ascii_lowercase) ** args.minimum_length
-    else:
+
+    if args.format == 'add-complexity':
         minimumLengthCombinations = len(ascii_uppercase) * (len(ascii_lowercase) ** (args.minimum_length - 3)) * len(digits) * len(punctuation)
+    elif args.format == 'lowercase':
+        minimumLengthCombinations = len(ascii_lowercase) ** args.minimum_length
+    elif args.format == 'digits':
+        minimumLengthCombinations = len(digits) ** args.minimum_length
+
     print(ceil(log(max(combinations, minimumLengthCombinations), 2)))
     exit()
 
@@ -117,7 +145,7 @@ if args.show_entropy:
 password = ''
 uniqueness = 1
 
-if not args.all_lowercase:
+if args.format == 'add-complexity':
     password += secrets.choice(ascii_uppercase)
     uniqueness *= len(ascii_uppercase)
 
@@ -127,9 +155,19 @@ if not args.all_lowercase:
     password += secrets.choice(punctuation)
     uniqueness *= len(punctuation)
 
-while uniqueness < combinations or len(password) < args.minimum_length:
-    password = password[:1] + secrets.choice(ascii_lowercase) + password[1:]
-    uniqueness *= len(ascii_lowercase)
+    while uniqueness < combinations or len(password) < args.minimum_length:
+        password = password[:1] + secrets.choice(ascii_lowercase) + password[1:]
+        uniqueness *= len(ascii_lowercase)
+
+elif args.format == 'lowercase':
+    while uniqueness < combinations or len(password) < args.minimum_length:
+        password = password[:1] + secrets.choice(ascii_lowercase) + password[1:]
+        uniqueness *= len(ascii_lowercase)
+
+elif args.format == 'digits':
+    while uniqueness < combinations or len(password) < args.minimum_length:
+        password = password[:1] + secrets.choice(digits) + password[1:]
+        uniqueness *= len(digits)
 
 
 print(password)
