@@ -18,7 +18,7 @@ Enable MFA wherever possible addition to passwords.
 
 ```
 usage: ppg [-h] [--budget dollars] [--acceptance probability] [--factor {cloud,watts}] [--algorithm {MD5}] [--lifetime years] [--service {fido,hello,facebook}] [--minimum-length characters]
-           [--format {add-complexity,lowercase,digits}] [--show-entropy]
+           [--output {lowercase,complexity,digits}] [--show-entropy]
 
 Generate a password.
 
