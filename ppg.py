@@ -101,9 +101,11 @@ elif args.service == 'hello':
     # https://docs.microsoft.com/en-us/windows/security/information-protection/tpm/manage-tpm-lockout
     # Assume the device is lost or stolen and an automated pin entry system is used on the device
     # https://youtu.be/9R_D-zX3yP8
-    # Assume the attacker can repeatedly reboot and attempt 32 tries in the space of 60 seconds
+    # A reboot can take as low as 4.9s (today's hardware)
     # https://www.pcgamer.com/this-windows-10-pc-has-an-insanely-fast-boot-time-of-just-49-seconds/
-    rate = 32 / (32 + 4.9)
+    # At time of writing, Windows 10 requires a restart after 5 failed PIN attempts,
+    # which we assume takes 1s per attempt
+    rate = 5 / (5 + 4.9)
 
 elif args.service == 'facebook':
     # https://security.stackexchange.com/questions/181708/how-facebook-hashes-passwords
