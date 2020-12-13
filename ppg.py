@@ -55,7 +55,7 @@ parser.add_argument('--factor', choices=factors.keys(), default='cloud',
                     help='the constraining resource factor for the attack')
 
 # Lots of people use the same password(s) for very long stretches of time
-parser.add_argument('--lifetime', type=int, default=10, metavar='years',
+parser.add_argument('--lifetime', type=int, default=20, metavar='years',
                     help='lifespan of the secret')
 
 parser.add_argument('--service', choices=['fido', 'ios', 'ios-with-erase', 'hello', 'facebook'],

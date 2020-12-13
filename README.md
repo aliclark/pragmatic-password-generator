@@ -4,7 +4,7 @@ Generates sensible, secure passwords for everyday use.
 
 ```sh
 $ ./ppg.py
-Wxyomnkjqugjldlf7=
+jzgfdllpeaujvzdaol
 ```
 
 The length of the password is calculated using public data based on the performance and cost of GPU password cracking, making sure it's prohibitively expensive to crack your password at today's prices (extrapolating for energy efficiencies into the future).
