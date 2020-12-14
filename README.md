@@ -15,7 +15,7 @@ extrapolating into the future based on energy efficiency trend data.
 Using the default parameters, an attacker with
  * a $10k budget
  * on the Cloud
- * in 20 years' time from now
+ * 20 years' time from now
  * should only have a 1% chance of recovering your password even if it's protected using a weak hash
 
 (This currently corresponds to 82 bits of entropy)
