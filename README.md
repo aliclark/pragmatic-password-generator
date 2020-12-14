@@ -7,12 +7,19 @@ $ ./ppg.py
 jzgfdllpeaujvzdaol
 ```
 
-The length of the password is calculated using public data based on the performance and cost of GPU password cracking, making sure it's prohibitively expensive to crack your password at today's prices (extrapolating for energy efficiencies into the future).
+The length of the password is calculated using public data based on the
+performance and cost of GPU password cracking, making sure that it's
+prohibitively expensive to crack your password at today's prices, and
+extrapolating into the future based on energy efficiency trend data.
 
-The password format ensures an uppercase letter, digit, and symbol are present.
-The rest of the characters are lowercase to make them easy to type on mobile.
+Using the default parameters, an attacker with
+ * a $10k budget
+ * on the Cloud
+ * in 20 years' time from now
+ * should only have a 1% chance of recovering your password even if it's protected using a weak hash
 
-Enable MFA wherever possible addition to passwords.
+It's still a good idea to also enable 2FA on accounts wherever possible in
+addition to using a secure password.
 
 ## Usage
 
@@ -39,8 +46,3 @@ optional arguments:
                         output options, the default is to vary character types to meet complexity requirements
   --show-entropy        display the entropy needed (in bits) without generating a password
 ```
-
-Using the default parameters, an attacker 20 years into the future
-spending a budget of $10k (inflation adjusted) on the Cloud would be expected to
-have no greater than 1% probability of recovering your password from
-a leaked database hashed using any algorithm.
