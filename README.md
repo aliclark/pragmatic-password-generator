@@ -18,6 +18,8 @@ Using the default parameters, an attacker with
  * in 20 years' time from now
  * should only have a 1% chance of recovering your password even if it's protected using a weak hash
 
+(This currently corresponds to 82 bits of entropy)
+
 It's still a good idea to also enable 2FA on accounts wherever possible in
 addition to using a secure password.
 
