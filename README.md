@@ -1,6 +1,6 @@
 # Pragmatic password generator
 
-Generates sensible, secure passwords for everyday use.
+## Generate sensible, secure passwords for everyday use.
 
 ```sh
 $ ./ppg.py
